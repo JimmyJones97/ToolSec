@@ -121,6 +121,13 @@ public:
 	 * @return The cross product.
 	 */
 	float operator^(const FVector2D& V) const;
+
+	/**
+	 * Checks whether all components of the vector are exactly zero.
+	 *
+	 * @return true if vector is exactly zero, otherwise false.
+	 */
+	bool IsZero() const;
 };
 
 
@@ -202,5 +209,8 @@ float FVector2D::operator^(const FVector2D& V) const
 	return X*V.Y - Y*V.X;
 }
 
-
+bool FVector2D::IsZero() const
+{
+	return X==0.f && Y==0.f;
+}
 #endif

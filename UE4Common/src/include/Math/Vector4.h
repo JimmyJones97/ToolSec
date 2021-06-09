@@ -1,5 +1,6 @@
 #ifndef VECTOR4_H
 #define VECTOR4_H
+#include "Math/Vector.h"
 
 
 /**
@@ -38,7 +39,7 @@ public:
 	 * @param InZ Z Coordinate.
 	 * @param InW W Coordinate.
 	 */
-	explicit FVector4(float InX = 0.0f, float InY = 0.0f, float InZ = 0.0f, float InW = 1.0f);
+	FVector4(float InX = 0.0f, float InY = 0.0f, float InZ = 0.0f, float InW = 1.0f);
 };
 
 
@@ -54,5 +55,19 @@ FVector4::FVector4(const FVector& InVector,float InW)
 	//DiagnosticCheckNaN();
 }
 
+FVector4::FVector4(float InX,float InY,float InZ,float InW)
+	: X(InX)
+	, Y(InY)
+	, Z(InZ)
+	, W(InW)
+{
+	//DiagnosticCheckNaN();
+}
+
+FVector::FVector( const FVector4& V )
+	: X(V.X), Y(V.Y), Z(V.Z)
+{
+	//DiagnosticCheckNaN();
+}
 
 #endif

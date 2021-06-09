@@ -4,7 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/UE4Common/include"
+                "${workspaceFolder}/UE4Common/src/include"
             ],
             "defines": [
                 "_DEBUG",

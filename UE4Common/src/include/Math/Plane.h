@@ -1,7 +1,7 @@
 #ifndef PLANE_H
 #define PLANE_H
 
-#include "Vector.h"
+#include "Math/Vector4.h"
 
 struct FPlane
     : public FVector

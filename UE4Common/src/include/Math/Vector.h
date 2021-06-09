@@ -1,9 +1,9 @@
 #ifndef VECTOR_H
 #define VECTOR_H
-#include "Vector4.h"
+//#include "Math/Vector4.h"
+class FVector4;
 
-
-struct FVector : public FVector
+struct FVector
 {
 public:
     float X;
@@ -65,13 +65,6 @@ FVector FVector::operator-(const FVector& V) const
 FVector FVector::operator-() const
 {
 	return FVector(-X, -Y, -Z);
-}
-
-
-FVector::FVector( const FVector4& V )
-	: X(V.X), Y(V.Y), Z(V.Z)
-{
-	//DiagnosticCheckNaN();
 }
 
 #endif
