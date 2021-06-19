@@ -8,6 +8,9 @@ set(LIBRARY_NAME "readname32")
 
 set(SOURCES
       src/readname.cpp
+      src/DumpUtils.cpp
+      src/RemoteUtils.cpp
+      src/UE4Names.cpp
     )
 
 
