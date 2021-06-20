@@ -17,8 +17,6 @@
 #include "UE4Names.h"
 #include "DumpUtils.h"
 
-
-
 unsigned int G_OFF_NAMES = 0x6E6B164;
 unsigned int G_ADDR_NAMES = 0; //also dword_6E6B164
 pid_t G_PID = -1;
@@ -68,7 +66,6 @@ int find_pid_of(const char *process_name)
     return pid;  
 }  
 
-
 unsigned long get_module_base(pid_t pid, const char* module_name)
 {
     FILE *fp;
@@ -95,8 +92,8 @@ unsigned long get_module_base(pid_t pid, const char* module_name)
     }
     return addr;
 }
-static unsigned long p_player = 0;
-static TUObjectArray *pGUObjectArray__ObjObjects = NULL;
+
+
 void readObjects(){
     // &GUObjectArray.ObjObjects;
     if(!G_ADDR_GUObjectArray__ObjObjects){
@@ -177,7 +174,13 @@ void readObjects(){
 
 }
 
-static std::map<unsigned int, unsigned int> STCharacterMovementComponent_map;
+typedef struct charmove{
+    unsigned int remote_uobject;
+    unsigned int remote_outer;
+}charmove;
+
+static std::map<unsigned int, charmove> STCharacterMovementComponent_map; // map<InternalIndex, remote_UObject*>
+static std::map<unsigned int, unsigned int> BP_PlayerPawn_C_map; // map<InternalIndex, remote_UObject*>
 void readLocationByMovementComp(){
     // &GUObjectArray.ObjObjects;
     if(!G_ADDR_GUObjectArray__ObjObjects){
@@ -199,8 +202,8 @@ void readLocationByMovementComp(){
         return;
     }
     // MaxElements, NumElements看着不对，可能是偏移有问题。
-    // printf("Objects=0x%08x, MaxElements=%d, NumElements=%d\n", \
-    //         fixed_uobject_array.Objects, fixed_uobject_array.MaxElements, fixed_uobject_array.NumElements);
+    printf("Objects=0x%08x, MaxElements=%d, NumElements=%d\n", \
+            fixed_uobject_array.Objects, fixed_uobject_array.MaxElements, fixed_uobject_array.NumElements);
     
     for(int i=0; i<fixed_uobject_array.NumElements; i++){
         FUObjectItem item = { 0 };
@@ -230,7 +233,6 @@ void readLocationByMovementComp(){
                 return;        
             }            
         }
-        
 
         char objName[256] = { 0 };
         char objClassName[256] = { 0 };
@@ -247,31 +249,87 @@ void readLocationByMovementComp(){
         //         obj.NamePrivate.Number, 
         //         obj.OuterPrivate,
         //         obj.OuterPrivate? GetNameByIndex(objOuter.NamePrivate.ComparisonIndex, objOuterName) : NULL);
-
-        if(strstr(GetNameByIndex(objClass.NamePrivate.ComparisonIndex, objClassName), "STCharacterMovementComponent") && strstr(GetNameByIndex(obj.NamePrivate.ComparisonIndex, objName), "CharMoveComp")) 
+        GetNameByIndex(obj.NamePrivate.ComparisonIndex, objName);
+        GetNameByIndex(objClass.NamePrivate.ComparisonIndex, objClassName);
+        GetNameByIndex(objOuter.NamePrivate.ComparisonIndex, objOuterName);
+        // 收集类型为STCharacterMovementComponent的UObject对象
+        if(
+            strncmp(objClassName, "STCharacterMovementComponent", strlen("STCharacterMovementComponent")) == 0 
+            && strncmp(objName, "CharMoveComp", strlen("CharMoveComp")) == 0
+            && strncmp(objOuterName, "BP_TrainPlayerPawn_C", strlen("BP_TrainPlayerPawn_C")) == 0
+        ) 
         {
-            if(STCharacterMovementComponent_map.find((unsigned int)item.Object) == STCharacterMovementComponent_map.end()){
+            unsigned int InternalIndex = obj.InternalIndex;
+            if(STCharacterMovementComponent_map.find(InternalIndex) == STCharacterMovementComponent_map.end()){
                 printf("find a new CharMoveComp:STCharacterMovementComponent: 0x%08x\n", (unsigned int)item.Object);
-                STCharacterMovementComponent_map[(unsigned int)item.Object] = (unsigned int)item.Object;
+                STCharacterMovementComponent_map[InternalIndex] = {(unsigned int)item.Object, (unsigned int)obj.OuterPrivate};
             }
         }
     }
+    printf("STCharacterMovementComponent_map size:%d\n", STCharacterMovementComponent_map.size());
 
-    while(true){
-        std::map<unsigned int, unsigned int>::iterator it;
+    do{
+        std::map<unsigned int, charmove>::iterator it;
         for(it=STCharacterMovementComponent_map.begin(); it != STCharacterMovementComponent_map.end(); ++it){
-            unsigned int p_CharMoveComp = it->first;
+            unsigned int InternalIndex = it->first;
+            unsigned int p_CharMoveComp = (it->second).remote_uobject;
+            unsigned int remote_Outer = it->second.remote_outer;
+
             FVector LastUpdateLocation;
             if(0 != readNBytes(G_PID, (void*)(p_CharMoveComp + 0x27c), (void*)&LastUpdateLocation, sizeof(FVector))){
                 printf("error: access remote LastUpdateLocation failed:0x%08x, size:%d\n",p_CharMoveComp + 0x27c, sizeof(FVector) );
-                continue;        
+                return;        
             }
-            printf("p_CharMoveComp=0x%08x, LastUpdateLocation=(%f,%f,%f)\n", p_CharMoveComp, LastUpdateLocation.X, LastUpdateLocation.Y, LastUpdateLocation.Z);   
+
+            UObject temp_Outer;
+            if(0 != readNBytes(G_PID, (void*)remote_Outer, (void*)&temp_Outer, sizeof(UObject))){
+                printf("error: access remote Outer failed:0x%08x, size:%d\n",remote_Outer, sizeof(UObject) );
+                return;        
+            }
+            TArray<wchar_t> PlayerName;
+            if(0 != readNBytes(G_PID, (void*)(remote_Outer+0x5f8), (void*)&PlayerName, sizeof(PlayerName))){
+                printf("error: access remote PlayerName failed:0x%08x, size:%d\n",remote_Outer+0x5f8, sizeof(PlayerName) );
+                return;        
+            }
+
+            if(PlayerName.Data){
+                // Note: 和平精英游戏里的PlayerName.Data存储的每个字符占用2个字节
+                // 在Android里，sizeof(wchar_t)=4，因此先读取2 * PlayerName.Count个字节，
+                // 要在printf里打印，需要将逐个将字符的2个字节赋值给wchar_t字符数组，再调用printf打印
+                uint16_t temp_playername[256] = { 0 };
+                //printf("sizeof(wchar_t)=%d, read len:%d", sizeof(wchar_t), 2 * PlayerName.Count);
+                if(0 != readNBytes(G_PID, (void*)PlayerName.Data, (void*)&temp_playername, 2*PlayerName.Count)){
+                    printf("error: access remote temp_playername failed:0x%08x, size:%d\n", PlayerName.Data, 2*PlayerName.Count);
+                    return;        
+                }
+                wchar_t temp_wchar[256] = {0};
+                for(int i=0; i<PlayerName.Count; i++){
+                    //printf("[%d] %04x ", i, temp_playername[i]);
+                    temp_wchar[i] = temp_playername[i];
+                }
+                //printf("\n");
+                setlocale(LC_ALL, "");
+                // if(printf("%ls\n", temp_wchar) < 0){
+                //         perror("printf");
+                // }
+                printf("InternalIndex=%d, p_CharMoveComp=0x%08x, LastUpdateLocation=(%f,%f,%f), PlayerName(Data=%p, Count=%d, Max=%d) %ls\n", 
+                    InternalIndex, p_CharMoveComp, LastUpdateLocation.X, LastUpdateLocation.Y, LastUpdateLocation.Z,
+                    PlayerName.Data, PlayerName.Count, PlayerName.Max, temp_wchar);     
+            }
+            else{
+                printf("InternalIndex=%d, p_CharMoveComp=0x%08x, LastUpdateLocation=(%f,%f,%f), PlayerName(Data=%p, Count=%d, Max=%d)\n", 
+                    InternalIndex, p_CharMoveComp, LastUpdateLocation.X, LastUpdateLocation.Y, LastUpdateLocation.Z,
+                    PlayerName.Data, PlayerName.Count, PlayerName.Max);  
+            }
+            
+             
+            
+ 
         }
         printf("-----\n");
 
         sleep(5);
-    }    
+    }while(true);    
 }
 
 int print_player_name(UObject *pUObj){
@@ -308,13 +366,13 @@ int main(int argc, char *argv[]){
     char s[1024] = { 0 };
     GetNameByIndex(1199, s);
     printf("s:%s\n", s);
-    readObjects();
-    //readLocationByMovementComp();
+    //readObjects();
+    readLocationByMovementComp();
 
     //char ws[] = {0x60, 0x4f, 0x28, 0x57, 0x93, 0x62, 0x50, 0x5b, 0x6c, 0x70, 0xa8, 0x61, 0x79, 0x62, 0x00, 0x00};
-    wchar_t ws[] = {0x4f60, 0x5728, 0x6293, 0x5b50, 0x706c, 0x61a8,
-                    0x6279, 0};
+    wchar_t ws[] = {0x4f60, 0x5728, 0x6293, 0x5b50, 0x706c, 0x61a8, 0x6279, 0};
+    wchar_t ws2[] = {0x5e05, 0x6c14, 0x8def, 0x838e, 0x0034, 0x0037, 0x0033, 0};
     setlocale(LC_ALL, "");
-    printf("ws:%ls\n", ws);
+    printf("ws:%ls\n", ws2);
     return 0;
 }
