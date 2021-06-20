@@ -1,7 +1,7 @@
 #ifndef ROTATOR_H
 #define ROTATOR_H
-#include "Math/Vector.h"
-#include "Math/Quat.h"
+#include "../Math/Vector.h"
+#include "../Math/Quat.h"
 #include <stdint.h>
 typedef uint8_t uint8;
 typedef uint16_t uint16;
@@ -32,14 +32,14 @@ public:
 	/**
 	 * Default constructor (no initialization).
 	 */
-	FRotator() { }
+	inline FRotator() { }
 
 	/**
 	 * Constructor
 	 *
 	 * @param InF Value to set all components to.
 	 */
-	explicit FRotator(float InF);
+	inline explicit FRotator(float InF);
 
 	/**
 	 * Constructor.
@@ -48,14 +48,21 @@ public:
 	 * @param InYaw Yaw in degrees.
 	 * @param InRoll Roll in degrees.
 	 */
-	FRotator( float InPitch, float InYaw, float InRoll );
+	inline FRotator( float InPitch, float InYaw, float InRoll );
+
+	/**
+	 * Constructor.
+	 *
+	 * @param EForceInit Force Init Enum.
+	 */
+	inline explicit FRotator( EForceInit );
 
 	/**
 	 * Constructor.
 	 *
 	 * @param Quat Quaternion used to specify rotation.
 	 */
-	explicit FRotator( const FQuat& Quat );
+	inline explicit FRotator( const FQuat& Quat );
 
 public:
 
@@ -67,7 +74,7 @@ public:
 	 * @param R The other rotator.
 	 * @return The result of adding a rotator to this.
 	 */
-	FRotator operator+( const FRotator& R ) const;
+	inline FRotator operator+( const FRotator& R ) const;
 
 	/**
 	 * Get the result of subtracting a rotator from this.
@@ -75,7 +82,7 @@ public:
 	 * @param R The other rotator.
 	 * @return The result of subtracting a rotator from this.
 	 */
-	FRotator operator-( const FRotator& R ) const;
+	inline FRotator operator-( const FRotator& R ) const;
 
 	/**
 	 * Get the result of scaling this rotator.
@@ -83,7 +90,7 @@ public:
 	 * @param Scale The scaling factor.
 	 * @return The result of scaling.
 	 */
-	FRotator operator*( float Scale ) const;
+	inline FRotator operator*( float Scale ) const;
 
 	/**
 	 * Multiply this rotator by a scaling factor.
@@ -91,7 +98,7 @@ public:
 	 * @param Scale The scaling factor.
 	 * @return Copy of the rotator after scaling.
 	 */
-	FRotator operator*=( float Scale );
+	inline FRotator operator*=( float Scale );
 
 	// Binary comparison operators.
 
@@ -102,7 +109,7 @@ public:
 	 * @return true if two rotators are identical, otherwise false.
 	 * @see Equals()
 	 */
-	bool operator==( const FRotator& R ) const;
+	inline bool operator==( const FRotator& R ) const;
 
 	/**
 	 * Checks whether two rotators are different.
@@ -110,7 +117,7 @@ public:
 	 * @param V The other rotator.
 	 * @return true if two rotators are different, otherwise false.
 	 */
-	bool operator!=( const FRotator& V ) const;
+	inline bool operator!=( const FRotator& V ) const;
 
 	// Assignment operators.
 
@@ -120,7 +127,7 @@ public:
 	 * @param R The other rotator.
 	 * @return Copy of rotator after addition.
 	 */
-	FRotator operator+=( const FRotator& R );
+	inline FRotator operator+=( const FRotator& R );
 
 	/**
 	 * Subtracts another rotator from this.
@@ -128,7 +135,7 @@ public:
 	 * @param R The other rotator.
 	 * @return Copy of rotator after subtraction.
 	 */
-	FRotator operator-=( const FRotator& R );
+	inline FRotator operator-=( const FRotator& R );
 
 public:
 
@@ -308,5 +315,95 @@ public:
 
 	
 };
+
+
+/* FRotator inline functions
+ *****************************************************************************/
+
+/**
+ * Scale a rotator and return.
+ *
+ * @param Scale scale to apply to R.
+ * @param R rotator to be scaled.
+ * @return Scaled rotator.
+ */
+inline FRotator operator*( float Scale, const FRotator& R )
+{
+	return R.operator*( Scale );
+}
+
+
+FRotator::FRotator( float InF ) 
+	:	Pitch(InF), Yaw(InF), Roll(InF) 
+{
+	// DiagnosticCheckNaN();
+}
+
+
+FRotator::FRotator( float InPitch, float InYaw, float InRoll )
+	:	Pitch(InPitch), Yaw(InYaw), Roll(InRoll) 
+{
+	// DiagnosticCheckNaN();
+}
+
+
+FRotator::FRotator(EForceInit)
+	: Pitch(0), Yaw(0), Roll(0)
+{}
+
+
+FRotator FRotator::operator+( const FRotator& R ) const
+{
+	return FRotator( Pitch+R.Pitch, Yaw+R.Yaw, Roll+R.Roll );
+}
+
+
+FRotator FRotator::operator-( const FRotator& R ) const
+{
+	return FRotator( Pitch-R.Pitch, Yaw-R.Yaw, Roll-R.Roll );
+}
+
+
+FRotator FRotator::operator*( float Scale ) const
+{
+	return FRotator( Pitch*Scale, Yaw*Scale, Roll*Scale );
+}
+
+
+FRotator FRotator::operator*= (float Scale)
+{
+	Pitch = Pitch*Scale; Yaw = Yaw*Scale; Roll = Roll*Scale;
+	// DiagnosticCheckNaN();
+	return *this;
+}
+
+
+bool FRotator::operator==( const FRotator& R ) const
+{
+	return Pitch==R.Pitch && Yaw==R.Yaw && Roll==R.Roll;
+}
+
+
+bool FRotator::operator!=( const FRotator& V ) const
+{
+	return Pitch!=V.Pitch || Yaw!=V.Yaw || Roll!=V.Roll;
+}
+
+
+FRotator FRotator::operator+=( const FRotator& R )
+{
+	Pitch += R.Pitch; Yaw += R.Yaw; Roll += R.Roll;
+	// DiagnosticCheckNaN();
+	return *this;
+}
+
+
+FRotator FRotator::operator-=( const FRotator& R )
+{
+	Pitch -= R.Pitch; Yaw -= R.Yaw; Roll -= R.Roll;
+	// DiagnosticCheckNaN();
+	return *this;
+}
+
 
 #endif

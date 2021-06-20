@@ -1,5 +1,10 @@
-#include "Math/Matrix.h"
-#include "Math/UnrealMathSSE.h"
+#include "../include/Math/Matrix.h"
+#include "../include/Math/UnrealMathSSE.h"
+
+
+FMatrix::FMatrix()
+{
+}
 
 FMatrix::FMatrix(const FPlane& InX, const FPlane& InY, const FPlane& InZ, const FPlane& InW){
     M[0][0] = InX.X; M[0][1] = InX.Y;  M[0][2] = InX.Z;  M[0][3] = InX.W;

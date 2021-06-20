@@ -1,14 +1,14 @@
 #ifndef PERSPECTIVE_MATRIX_H
 #define PERSPECTIVE_MATRIX_H
-#include "Math/Matrix.h"
-#include "Math/UnrealMathUtility.h"
+#include "../Math/Matrix.h"
+#include "../Math/UnrealMathUtility.h"
 
 class FReversedZPerspectiveMatrix : public FMatrix
 {
 public:
-	FReversedZPerspectiveMatrix(float HalfFOVX, float HalfFOVY, float MultFOVX, float MultFOVY, float MinZ, float MaxZ);
-	FReversedZPerspectiveMatrix(float HalfFOV, float Width, float Height, float MinZ, float MaxZ);
-	FReversedZPerspectiveMatrix(float HalfFOV, float Width, float Height, float MinZ);
+	inline FReversedZPerspectiveMatrix(float HalfFOVX, float HalfFOVY, float MultFOVX, float MultFOVY, float MinZ, float MaxZ);
+	inline FReversedZPerspectiveMatrix(float HalfFOV, float Width, float Height, float MinZ, float MaxZ);
+	inline FReversedZPerspectiveMatrix(float HalfFOV, float Width, float Height, float MinZ);
 };
 
 

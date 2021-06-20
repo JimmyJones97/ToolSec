@@ -1,6 +1,6 @@
 #ifndef UNREAL_MATH_UTILITY_H
 #define UNREAL_MATH_UTILITY_H
-#include "GenericPlatform/GenericPlatformMath.h"
+#include "../GenericPlatform/GenericPlatformMath.h"
 
 
 /*-----------------------------------------------------------------------------

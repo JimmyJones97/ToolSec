@@ -1,6 +1,6 @@
 #ifndef VECTOR4_H
 #define VECTOR4_H
-#include "Math/Vector.h"
+#include "../Math/Vector.h"
 
 
 /**
@@ -29,7 +29,7 @@ public:
 	 * @param InVector 3D Vector to set first three components.
 	 * @param InW W Coordinate.
 	 */
-	FVector4(const FVector& InVector, float InW = 1.0f);
+	inline FVector4(const FVector& InVector, float InW = 1.0f);
 
 	/**
 	 * Creates and initializes a new vector from the specified components.
@@ -39,7 +39,7 @@ public:
 	 * @param InZ Z Coordinate.
 	 * @param InW W Coordinate.
 	 */
-	FVector4(float InX = 0.0f, float InY = 0.0f, float InZ = 0.0f, float InW = 1.0f);
+	inline FVector4(float InX = 0.0f, float InY = 0.0f, float InZ = 0.0f, float InW = 1.0f);
 };
 
 

@@ -1,6 +1,7 @@
 #ifndef VECTOR2D_H
 #define VECTOR2D_H
-#include "Misc/CoreMiscDefines.h"
+#include "../Misc/CoreMiscDefines.h"
+#include "../Math/IntPoint.h"
 /**
  * A vector in 2-D space composed of components (X, Y) with floating point precision.
  */
@@ -15,7 +16,7 @@ struct FVector2D
 public:
 
 	/** Default constructor (no initialization). */
-	FVector2D() { }
+	inline FVector2D() { }
 
 	/**
 	 * Constructor using initial values for each component.
@@ -23,21 +24,21 @@ public:
 	 * @param InX X coordinate.
 	 * @param InY Y coordinate.
 	 */
-	FVector2D(float InX, float InY);
+	inline FVector2D(float InX, float InY);
 
 	/**
 	 * Constructs a vector from an FIntPoint.
 	 *
 	 * @param InPos Integer point used to set this vector.
 	 */
-	FVector2D(FIntPoint InPos);
+	inline FVector2D(FIntPoint InPos);
 
 	/**
 	 * Constructor which initializes all components to zero.
 	 *
 	 * @param EForceInit Force init enum
 	 */
-	explicit FVector2D(EForceInit);
+	inline explicit FVector2D(EForceInit);
 
 
 public:
@@ -48,7 +49,7 @@ public:
 	 * @param V The other vector to add to this.
 	 * @return The result of adding the vectors together.
 	 */
-	FVector2D operator+(const FVector2D& V) const;
+	inline FVector2D operator+(const FVector2D& V) const;
 
 	/**
 	 * Gets the result of subtracting a vector from this one.
@@ -56,7 +57,7 @@ public:
 	 * @param V The other vector to subtract from this.
 	 * @return The result of the subtraction.
 	 */
-	FVector2D operator-(const FVector2D& V) const;
+	inline FVector2D operator-(const FVector2D& V) const;
 
 	/**
 	 * Gets the result of scaling the vector (multiplying each component by a value).
@@ -64,7 +65,7 @@ public:
 	 * @param Scale How much to scale the vector by.
 	 * @return The result of scaling this vector.
 	 */
-	FVector2D operator*(float Scale) const;
+	inline FVector2D operator*(float Scale) const;
 
 	/**
 	 * Gets the result of dividing each component of the vector by a value.
@@ -72,7 +73,7 @@ public:
 	 * @param Scale How much to divide the vector by.
 	 * @return The result of division on this vector.
 	 */
-	FVector2D operator/(float Scale) const;
+	inline FVector2D operator/(float Scale) const;
 
 	/**
 	 * Gets the result of this vector + float A.
@@ -80,7 +81,7 @@ public:
 	 * @param A Float to add to each component.
 	 * @return The result of this vector + float A.
 	 */
-	FVector2D operator+(float A) const;
+	inline FVector2D operator+(float A) const;
 
 	/**
 	 * Gets the result of subtracting from each component of the vector.
@@ -88,7 +89,7 @@ public:
 	 * @param A Float to subtract from each component
 	 * @return The result of this vector - float A.
 	 */
-	FVector2D operator-(float A) const;
+	inline FVector2D operator-(float A) const;
 
 	/**
 	 * Gets the result of component-wise multiplication of this vector by another.
@@ -96,7 +97,7 @@ public:
 	 * @param V The other vector to multiply this by.
 	 * @return The result of the multiplication.
 	 */
-	FVector2D operator*(const FVector2D& V) const;
+	inline FVector2D operator*(const FVector2D& V) const;
 
 	/**
 	 * Gets the result of component-wise division of this vector by another.
@@ -104,7 +105,7 @@ public:
 	 * @param V The other vector to divide this by.
 	 * @return The result of the division.
 	 */
-	FVector2D operator/(const FVector2D& V) const;
+	inline FVector2D operator/(const FVector2D& V) const;
 
 	/**
 	 * Calculates dot product of this vector and another.
@@ -112,7 +113,7 @@ public:
 	 * @param V The other vector.
 	 * @return The dot product.
 	 */
-	float operator|(const FVector2D& V) const;
+	inline float operator|(const FVector2D& V) const;
 
 	/**
 	 * Calculates cross product of this vector and another.
@@ -120,14 +121,14 @@ public:
 	 * @param V The other vector.
 	 * @return The cross product.
 	 */
-	float operator^(const FVector2D& V) const;
+	inline float operator^(const FVector2D& V) const;
 
 	/**
 	 * Checks whether all components of the vector are exactly zero.
 	 *
 	 * @return true if vector is exactly zero, otherwise false.
 	 */
-	bool IsZero() const;
+	inline bool IsZero() const;
 };
 
 

@@ -1,9 +1,9 @@
 #ifndef INVERSE_ROTATION_MATRIX_H
 #define INVERSE_ROTATION_MATRIX_H
-#include "Math/Rotator.h"
-#include "Math/Plane.h"
-#include "Math/Matrix.h"
-#include "Math/UnrealMathUtility.h"
+#include "../Math/Rotator.h"
+#include "../Math/Plane.h"
+#include "../Math/Matrix.h"
+#include "../Math/UnrealMathUtility.h"
 
 /** Inverse Rotation matrix */
 class FInverseRotationMatrix
@@ -15,7 +15,7 @@ public:
 	 *
 	 * @param Rot rotation
 	 */
-	FInverseRotationMatrix(const FRotator& Rot);
+	inline FInverseRotationMatrix(const FRotator& Rot);
 };
 
 

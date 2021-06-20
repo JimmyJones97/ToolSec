@@ -16,6 +16,6 @@ set(SOURCES
 
 if (CMAKE_SYSTEM_NAME MATCHES "^Android")
 add_executable(${LIBRARY_NAME} ${SOURCES})
-  target_link_libraries(${LIBRARY_NAME} log)
+  target_link_libraries(${LIBRARY_NAME} log ue4common)
 endif()
 endif()

@@ -13,7 +13,7 @@ public:
 public:
 
 	/** Default constructor (no initialization). */
-	FVector();    
+	inline FVector();    
 
 	/**
 	 * Constructor using initial values for each component.
@@ -22,14 +22,14 @@ public:
 	 * @param InY Y Coordinate.
 	 * @param InZ Z Coordinate.
 	 */
-	FVector(float InX, float InY, float InZ);
+	inline FVector(float InX, float InY, float InZ);
 
 	/**
 	 * Constructor using the XYZ components from a 4D vector.
 	 *
 	 * @param V 4D Vector to copy from.
 	 */
-	FVector(const FVector4& V);
+	inline FVector(const FVector4& V);
 
 	/**
 	 * Gets the result of component-wise subtraction of this by another vector.
@@ -37,14 +37,14 @@ public:
 	 * @param V The vector to subtract from this.
 	 * @return The result of vector subtraction.
 	 */
-	FVector operator-(const FVector& V) const;
+	inline FVector operator-(const FVector& V) const;
 
 	/**
 	 * Get a negated copy of the vector.
 	 *
 	 * @return A negated copy of the vector.
 	 */
-	FVector operator-() const;
+	inline FVector operator-() const;
 };
 
 

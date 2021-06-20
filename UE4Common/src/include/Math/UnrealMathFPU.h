@@ -1,6 +1,6 @@
 #ifndef UNREAL_MATH_FPU_H
 #define UNREAL_MATH_FPU_H
-#include "GenericPlatform/GenericPlatformMemory.h"
+#include "../GenericPlatform/GenericPlatformMemory.h"
 
 typedef unsigned char uint8;
 

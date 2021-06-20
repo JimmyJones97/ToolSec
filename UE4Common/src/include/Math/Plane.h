@@ -1,7 +1,7 @@
 #ifndef PLANE_H
 #define PLANE_H
 
-#include "Math/Vector4.h"
+#include "../Math/Vector4.h"
 
 struct FPlane
     : public FVector
@@ -12,21 +12,21 @@ public:
 public:
 
 	/** Default constructor (no initialization). */
-	FPlane();
+	inline FPlane();
 
 	/**
 	 * Copy Constructor.
 	 *
 	 * @param P Plane to copy from.
 	 */
-	FPlane(const FPlane& P);
+	inline FPlane(const FPlane& P);
 
 	/**
 	 * Constructor.
 	 *
 	 * @param V 4D vector to set up plane.
 	 */
-	FPlane(const FVector4& V);
+	inline FPlane(const FVector4& V);
 
 
     /**
@@ -37,7 +37,7 @@ public:
 	 * @param InZ Z-coefficient.
 	 * @param InW W-coefficient.
 	 */
-	FPlane(float InX, float InY, float InZ, float InW);
+	inline FPlane(float InX, float InY, float InZ, float InW);
 
 
 	/**
@@ -46,7 +46,7 @@ public:
 	 * @param InNormal Plane Normal Vector.
 	 * @param InW Plane W-coefficient.
 	 */
-	FPlane(FVector InNormal, float InW);
+	inline FPlane(FVector InNormal, float InW);
 
 	/**
 	 * Constructor.
@@ -54,7 +54,7 @@ public:
 	 * @param InBase Base point in plane.
 	 * @param InNormal Plane Normal Vector.
 	 */
-	FPlane(FVector InBase, const FVector &InNormal);
+	inline FPlane(FVector InBase, const FVector &InNormal);
 
 	/**
 	 * Constructor.
@@ -63,7 +63,7 @@ public:
 	 * @param B Second point in the plane.
 	 * @param C Third point in the plane.
 	 */
-	FPlane(FVector A, FVector B, FVector C);
+	inline FPlane(FVector A, FVector B, FVector C);
 
 };
 

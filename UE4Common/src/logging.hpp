@@ -3,7 +3,7 @@
 
 #include <android/log.h>
 
-#define ENABLE_DEBUG 0
+#define ENABLE_DEBUG 1
 
 #if ENABLE_DEBUG
 	#define DEBUG_PRINT(format,args...) \

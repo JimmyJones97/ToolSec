@@ -17,6 +17,10 @@
 #include "UE4Names.h"
 #include "DumpUtils.h"
 
+#include "../../UE4Common/src/include/Camera/CameraTypes.h"
+#include "../../UE4Common/src/include/MySimulation.h"
+#include "../../UE4Common/src/include/SceneView.h"
+
 unsigned int G_OFF_NAMES = 0x6E6B164;
 unsigned int G_ADDR_NAMES = 0; //also dword_6E6B164
 pid_t G_PID = -1;
@@ -179,8 +183,8 @@ typedef struct charmove{
     unsigned int remote_outer;
 }charmove;
 
-static std::map<unsigned int, charmove> STCharacterMovementComponent_map; // map<InternalIndex, remote_UObject*>
-static std::map<unsigned int, unsigned int> BP_PlayerPawn_C_map; // map<InternalIndex, remote_UObject*>
+static std::map<unsigned int, charmove> STCharacterMovementComponent_map; // map<InternalIndex, remote obj and outer>
+static unsigned int remote_BP_PlayerCameraManager_C;
 void readLocationByMovementComp(){
     // &GUObjectArray.ObjObjects;
     if(!G_ADDR_GUObjectArray__ObjObjects){
@@ -265,10 +269,46 @@ void readLocationByMovementComp(){
                 STCharacterMovementComponent_map[InternalIndex] = {(unsigned int)item.Object, (unsigned int)obj.OuterPrivate};
             }
         }
+
+        if(strncmp(objName, "BP_PlayerCameraManager_C", strlen("BP_PlayerCameraManager_C")) == 0
+            && strncmp(objClassName, "BP_PlayerCameraManager_C", strlen("BP_PlayerCameraManager_C")) == 0
+            && strncmp(objOuterName, "PersistentLevel", strlen("PersistentLevel")) == 0
+        ){
+            remote_BP_PlayerCameraManager_C = (unsigned int)item.Object;
+        }
     }
     printf("STCharacterMovementComponent_map size:%d\n", STCharacterMovementComponent_map.size());
 
+
+
     do{
+
+        FMinimalViewInfo POV;
+        char buf[0x590] = {0};
+        unsigned int CameraCache_off = 0x350;
+        unsigned int POV_off = CameraCache_off + 0x4;
+        if(0 != readNBytes(G_PID, (void*)(remote_BP_PlayerCameraManager_C + CameraCache_off), (void*)buf, 0x590)){
+            printf("error: access remote CameraCache failed:0x%08x, size:%d\n", (remote_BP_PlayerCameraManager_C + POV_off), 0x590);
+            return;        
+        }
+        // float *pf = (float*)buf;
+        // for(int i=0; i<0x590/4; i++){
+        //     printf("[%d]%f ",i, *pf);
+        //     pf++;
+        //     if(i>0 && i%8 == 0){
+        //         printf("\n");
+        //     }
+        // }
+        // printf("\n");
+        memcpy(&POV, buf+4, sizeof(FMinimalViewInfo));
+        printf("POV Location=(%f,%f,%f) Rotation=(%f,%f,%f) FOV=%f, AspectRatio=%f\n",
+            POV.Location.X, POV.Location.Y, POV.Location.Z, POV.Rotation.Yaw, POV.Rotation.Pitch, POV.Rotation.Roll,
+            POV.FOV, POV.AspectRatio);
+
+        FSceneViewProjectionData ProjectionData;
+        MySimulation::LocalPlayer__GetProjectionData(2340.f, 1080.f, POV, ProjectionData);
+
+
         std::map<unsigned int, charmove>::iterator it;
         for(it=STCharacterMovementComponent_map.begin(); it != STCharacterMovementComponent_map.end(); ++it){
             unsigned int InternalIndex = it->first;
@@ -292,6 +332,9 @@ void readLocationByMovementComp(){
                 return;        
             }
 
+            FVector2D out_ScreenPos;
+            FSceneView::ProjectWorldToScreen(LastUpdateLocation, ProjectionData.GetViewRect(), ProjectionData.ComputeViewProjectionMatrix(), out_ScreenPos);
+
             if(PlayerName.Data){
                 // Note: 和平精英游戏里的PlayerName.Data存储的每个字符占用2个字节
                 // 在Android里，sizeof(wchar_t)=4，因此先读取2 * PlayerName.Count个字节，
@@ -312,20 +355,44 @@ void readLocationByMovementComp(){
                 // if(printf("%ls\n", temp_wchar) < 0){
                 //         perror("printf");
                 // }
-                printf("InternalIndex=%d, p_CharMoveComp=0x%08x, LastUpdateLocation=(%f,%f,%f), PlayerName(Data=%p, Count=%d, Max=%d) %ls\n", 
+                printf("InternalIndex=%d, p_CharMoveComp=0x%08x, LastUpdateLocation=(%f,%f,%f)  screenPos:(%f,%f) %ls\n", 
                     InternalIndex, p_CharMoveComp, LastUpdateLocation.X, LastUpdateLocation.Y, LastUpdateLocation.Z,
-                    PlayerName.Data, PlayerName.Count, PlayerName.Max, temp_wchar);     
+                    out_ScreenPos.X, out_ScreenPos.Y, temp_wchar);     
             }
             else{
-                printf("InternalIndex=%d, p_CharMoveComp=0x%08x, LastUpdateLocation=(%f,%f,%f), PlayerName(Data=%p, Count=%d, Max=%d)\n", 
-                    InternalIndex, p_CharMoveComp, LastUpdateLocation.X, LastUpdateLocation.Y, LastUpdateLocation.Z,
-                    PlayerName.Data, PlayerName.Count, PlayerName.Max);  
+                printf("InternalIndex=%d, p_CharMoveComp=0x%08x, LastUpdateLocation=(%f,%f,%f)\n", 
+                    InternalIndex, p_CharMoveComp, LastUpdateLocation.X, LastUpdateLocation.Y, LastUpdateLocation.Z);  
             }
-            
-             
+
             
  
         }
+
+// /** 
+//  * Cached camera POV info, stored as optimization so we only
+//  * need to do a full camera update once per tick.
+//  */
+// USTRUCT()
+// struct FCameraCacheEntry
+// {
+// 	GENERATED_USTRUCT_BODY()
+// public:
+
+// 	/** World time this entry was created. */
+// 	UPROPERTY()
+// 	float TimeStamp;
+
+// 	/** Camera POV to cache. */
+// 	UPROPERTY()
+// 	FMinimalViewInfo POV;
+
+// 	FCameraCacheEntry()
+// 		: TimeStamp(0.f)
+// 	{}
+// };
+
+
+
         printf("-----\n");
 
         sleep(5);

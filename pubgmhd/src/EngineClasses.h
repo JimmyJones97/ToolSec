@@ -266,19 +266,21 @@ public:
     UProperty* Inner;
 };
 
-class FVector 
-{
-public:
 
-	/** Vector's X component. */
-	float X;
+// 与UE4Common中重复定义，先注释掉
+// class FVector 
+// {
+// public:
 
-	/** Vector's Y component. */
-	float Y;
+// 	/** Vector's X component. */
+// 	float X;
 
-	/** Vector's Z component. */
-	float Z;
-};
+// 	/** Vector's Y component. */
+// 	float Y;
+
+// 	/** Vector's Z component. */
+// 	float Z;
+// };
 
 
 

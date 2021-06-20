@@ -1,7 +1,11 @@
 #ifndef INT_POINT_H
 #define INT_POINT_H
-#include "Misc/CoreMiscDefines.h"
+#include <stdint.h>
 
+#include "../Misc/CoreMiscDefines.h"
+
+
+typedef int32_t int32;
 
 /**
  * Structure for integer points in 2-d space.
@@ -19,7 +23,7 @@ struct FIntPoint
 public:
 
 	/** Default constructor (no initialization). */
-	FIntPoint();
+	inline FIntPoint();
 
 	/**
 	 * Create and initialize a new instance with the specified coordinates.
@@ -27,14 +31,14 @@ public:
 	 * @param InX The x-coordinate.
 	 * @param InY The y-coordinate.
 	 */
-	FIntPoint(int32 InX, int32 InY);
+	inline FIntPoint(int32 InX, int32 InY);
 
 	/**
 	 * Create and initialize a new instance to zero.
 	 *
 	 * @param EForceInit Force init enum
 	 */
-	explicit FIntPoint(EForceInit);
+	inline explicit FIntPoint(EForceInit);
 
     
 };

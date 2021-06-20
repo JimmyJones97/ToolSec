@@ -4,7 +4,7 @@
 typedef int32_t int32;
 
 #include "IntPoint.h"
-#include "Misc/CoreMiscDefines.h"
+#include "../Misc/CoreMiscDefines.h"
 
 /**
  * Structure for integer rectangles in 2-d space.
@@ -22,7 +22,7 @@ struct FIntRect
 public:
 
 	/** Constructor */
-	FIntRect();
+	inline FIntRect();
 
 	/**
 	 * Constructor
@@ -32,7 +32,7 @@ public:
 	 * @param X1 Maximum X coordinate.
 	 * @param Y1 Maximum Y coordinate.
 	 */
-	FIntRect( int32 X0, int32 Y0, int32 X1, int32 Y1 );
+	inline FIntRect( int32 X0, int32 Y0, int32 X1, int32 Y1 );
 
 	/**
 	 * Constructor
@@ -40,7 +40,7 @@ public:
 	 * @param InMin Minimum Point
 	 * @param InMax Maximum Point
 	 */
-	FIntRect( FIntPoint InMin, FIntPoint InMax );    
+	inline FIntRect( FIntPoint InMin, FIntPoint InMax );    
 
 public:
 	/**
@@ -48,14 +48,14 @@ public:
 	 *
 	 * @return The Height of the rectangle.
 	 */
-	int32 Height() const;
+	inline int32 Height() const;
 
 	/**
 	 * Gets the width of the rectangle.
 	 *
 	 * @return The width of the rectangle.
 	 */
-	int32 Width() const;
+	inline int32 Width() const;
 };
 
 
