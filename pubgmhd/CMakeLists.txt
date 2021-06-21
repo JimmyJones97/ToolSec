@@ -11,6 +11,7 @@ set(SOURCES
       src/DumpUtils.cpp
       src/RemoteUtils.cpp
       src/UE4Names.cpp
+      src/Tidy_BP_PlayerPawn_C.cpp
     )
 
 

@@ -16,6 +16,7 @@
 #include "RemoteUtils.h"
 #include "UE4Names.h"
 #include "DumpUtils.h"
+#include "Tidy_BP_PlayerPawn_C.h"
 
 #include "../../UE4Common/src/include/Camera/CameraTypes.h"
 #include "../../UE4Common/src/include/MySimulation.h"
@@ -315,6 +316,9 @@ void readLocationByMovementComp(){
             unsigned int p_CharMoveComp = (it->second).remote_uobject;
             unsigned int remote_Outer = it->second.remote_outer;
 
+            Tidy_BP_PlayerPawn_C player(remote_Outer);
+            printf("%s", player.ToString().c_str());
+
             FVector LastUpdateLocation;
             if(0 != readNBytes(G_PID, (void*)(p_CharMoveComp + 0x27c), (void*)&LastUpdateLocation, sizeof(FVector))){
                 printf("error: access remote LastUpdateLocation failed:0x%08x, size:%d\n",p_CharMoveComp + 0x27c, sizeof(FVector) );
@@ -363,38 +367,9 @@ void readLocationByMovementComp(){
                 printf("InternalIndex=%d, p_CharMoveComp=0x%08x, LastUpdateLocation=(%f,%f,%f)\n", 
                     InternalIndex, p_CharMoveComp, LastUpdateLocation.X, LastUpdateLocation.Y, LastUpdateLocation.Z);  
             }
-
             
- 
         }
-
-// /** 
-//  * Cached camera POV info, stored as optimization so we only
-//  * need to do a full camera update once per tick.
-//  */
-// USTRUCT()
-// struct FCameraCacheEntry
-// {
-// 	GENERATED_USTRUCT_BODY()
-// public:
-
-// 	/** World time this entry was created. */
-// 	UPROPERTY()
-// 	float TimeStamp;
-
-// 	/** Camera POV to cache. */
-// 	UPROPERTY()
-// 	FMinimalViewInfo POV;
-
-// 	FCameraCacheEntry()
-// 		: TimeStamp(0.f)
-// 	{}
-// };
-
-
-
         printf("-----\n");
-
         sleep(5);
     }while(true);    
 }
