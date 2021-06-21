@@ -1,8 +1,16 @@
 #include "SceneView.h"
-
+#include "../logging.hpp"
 
 bool FSceneView::ProjectWorldToScreen(const FVector& WorldPosition, const FIntRect& ViewRect, const FMatrix& ViewProjectionMatrix, FVector2D& out_ScreenPos)
 {
+	DEBUG_PRINT("WorldPosition=(%f,%f,%f), ViewRect=((%d,%d),(%d,%d))",
+		WorldPosition.X, WorldPosition.Y, WorldPosition.Z,
+		ViewRect.Min.X, ViewRect.Min.Y, ViewRect.Max.X, ViewRect.Max.Y);
+	DEBUG_PRINT("ViewProjectionMatrix:");
+    for(int i=0; i<4; i++){
+        DEBUG_PRINT("%f %f %f %f", 
+          ViewProjectionMatrix.M[i][0],ViewProjectionMatrix.M[i][1],ViewProjectionMatrix.M[i][2],ViewProjectionMatrix.M[i][3]);
+    }
 	FPlane Result = ViewProjectionMatrix.TransformFVector4(FVector4(WorldPosition, 1.f));
 	if ( Result.W > 0.0f )
 	{

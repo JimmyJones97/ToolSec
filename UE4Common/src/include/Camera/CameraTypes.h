@@ -33,7 +33,7 @@ namespace ECameraAnimPlaySpace
 }
 struct FMinimalViewInfo
 {
-	// 经过实际验证，这里结构与引擎中不同，插入了几个成员
+	// 经过实际验证，这里结构与引擎中不同，插入了3个成员，调试看一只是0
 	float unk00;
 	float unk01;
 	float unk02;
@@ -41,13 +41,14 @@ struct FMinimalViewInfo
 	/** Location */
 	FVector Location;
 
-	/** Rotation */
-	FRotator Rotation;
-
-	// 经过实际验证，这里结构与引擎中不同，插入了几个成员
+	// 经过实际验证，这里结构与引擎中不同，插入了3个成员，调试看一只是0
 	float unk10;
 	float unk11;
 	float unk12;
+
+	/** Rotation */
+	FRotator Rotation;
+
 
 	/** The field of view (in degrees) in perspective mode (ignored in Orthographic mode) */
 	

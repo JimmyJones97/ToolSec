@@ -17,6 +17,7 @@ bool MySimulation::LocalPlayer__GetProjectionData(float viewport_sizeX, float vi
     int32 Y = 0;
     uint32 SizeX = truncf(viewport_sizeX);
     uint32 SizeY = truncf(viewport_sizeY);
+    DEBUG_PRINT("SizeX:%d, SizeY:%d", SizeX, SizeY);
 
     FIntRect UnconstrainedRectangle = FIntRect(X, Y, X+SizeX, Y+SizeY);
     ProjectionData.SetViewRectangle(UnconstrainedRectangle);
@@ -40,6 +41,10 @@ bool MySimulation::LocalPlayer__GetProjectionData(float viewport_sizeX, float vi
 
     FMinimalViewInfo::CalculateProjectionMatrixGivenView(ViewInfo, /*inout*/ ProjectionData);
     
+    DEBUG_PRINT("ProjectionData.ViewRect=((%d,%d),(%d,%d))",
+        ProjectionData.GetViewRect().Min.X, ProjectionData.GetViewRect().Min.Y, ProjectionData.GetViewRect().Max.X, ProjectionData.GetViewRect().Max.Y);
+	 
+
     DEBUG_PRINT("ProjectionData.ViewRotationMatrix:");
     for(int i=0; i<4; i++){
         DEBUG_PRINT("%f %f %f %f", 
