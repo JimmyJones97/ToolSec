@@ -11,6 +11,10 @@
 @%ADB% push built\%ABI%\readname32 /data/local/tmp/readname32
 @%ADB% shell "chmod a+x" /data/local/tmp/readname32
 
+@set ABI=armeabi-v7a
+@%ADB% push built\%ABI%\fifo_reader32 /data/local/tmp/fifo_reader32
+@%ADB% shell "chmod a+x" /data/local/tmp/fifo_reader32
+
 @echo "push handy finish"
 
 pause

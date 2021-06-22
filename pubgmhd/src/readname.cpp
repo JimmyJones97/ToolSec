@@ -17,6 +17,7 @@
 #include "UE4Names.h"
 #include "DumpUtils.h"
 #include "Tidy_BP_PlayerPawn_C.h"
+#include "FIFOWriter.h"
 
 #include "../../UE4Common/src/include/Camera/CameraTypes.h"
 #include "../../UE4Common/src/include/MySimulation.h"
@@ -186,7 +187,7 @@ typedef struct charmove{
 
 static std::map<unsigned int, charmove> STCharacterMovementComponent_map; // map<InternalIndex, remote obj and outer>
 static unsigned int remote_BP_PlayerCameraManager_C;
-void readLocationByMovementComp(){
+void readLocationByMovementComp(FIFOWriter &fifo_writer){
     // &GUObjectArray.ObjObjects;
     if(!G_ADDR_GUObjectArray__ObjObjects){
         printf("error: G_ADDR_GUObjectArray__ObjObjects is NULL\n");
@@ -318,6 +319,8 @@ void readLocationByMovementComp(){
 
             Tidy_BP_PlayerPawn_C player(remote_Outer);
             printf("%s", player.ToString().c_str());
+             
+            fifo_writer.write_data((char*)player.ToString().c_str(), player.ToString().size());
 
             FVector LastUpdateLocation;
             if(0 != readNBytes(G_PID, (void*)(p_CharMoveComp + 0x27c), (void*)&LastUpdateLocation, sizeof(FVector))){
@@ -405,11 +408,18 @@ int main(int argc, char *argv[]){
     printf("libUE4.so base=0x%08x, G_ADDR_GUObjectArray__ObjObjects = 0x%08x + 0x%08x = 0x%08x\n", \
             libUE4_base, libUE4_base, G_OFf_GUObjectArray__ObjObjects, G_ADDR_GUObjectArray__ObjObjects);
     
+    FIFOWriter fifo_writer("/data/local/tmp/test_fifo");
+    if(0 != fifo_writer.init_fifo()){
+        printf("init fifo failed");
+        return -1;
+    }
+    
+
     char s[1024] = { 0 };
     GetNameByIndex(1199, s);
     printf("s:%s\n", s);
     //readObjects();
-    readLocationByMovementComp();
+    readLocationByMovementComp(fifo_writer);
 
     //char ws[] = {0x60, 0x4f, 0x28, 0x57, 0x93, 0x62, 0x50, 0x5b, 0x6c, 0x70, 0xa8, 0x61, 0x79, 0x62, 0x00, 0x00};
     wchar_t ws[] = {0x4f60, 0x5728, 0x6293, 0x5b50, 0x706c, 0x61a8, 0x6279, 0};
