@@ -18,8 +18,9 @@ enum {NAME_SIZE	= 1024};
 #define NAME_WIDE_MASK 0x1
 #define NAME_INDEX_SHIFT 1
 typedef struct FNameEntry{
+    struct FNameEntry *HashNext; // v1.14.10交换了Index与HashNext的位置
     int32_t Index;
-    struct FNameEntry *HashNext;
+    
     union{
         char AnsiName[NAME_SIZE];
         wchar_t WideName[NAME_SIZE];

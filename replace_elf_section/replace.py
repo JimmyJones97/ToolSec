@@ -1,8 +1,8 @@
 # coding: utf-8
 
-elf_file = "E:\\Discovery\\pubgmhd\\v1.13.12\\libUE4.so"
+elf_file = "D:\\Discovery\\pubgmhd\\v1.14.10\\libUE4.so"
 
-version = "v1.13.12"
+version = "v1.14.10"
 
 def replace(orig_so, piece, piece_start):
     orig_bytes = open(orig_so,"rb").read()
@@ -40,11 +40,11 @@ def replace2(orig_so, replaced_bin):
 if __name__ == "__main__":
     replace_list = [
         {
-            "bin_file": "E:\\Discovery\\pubgmhd\\v1.13.12\\libUE4_text",
+            "bin_file": "D:\\Discovery\\pubgmhd\\v1.14.10\\libUE4_text",
             "off": 0x00d1c360,
         },
         {
-            "bin_file": "E:\\Discovery\\pubgmhd\\v1.13.12\\libUE4_rodata",
+            "bin_file": "D:\\Discovery\\pubgmhd\\v1.14.10\\libUE4_rodata",
             "off": 0x05ac24f0,
         },
         ]
