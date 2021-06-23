@@ -24,12 +24,12 @@
 #include "../../UE4Common/src/include/SceneView.h"
 
 //unsigned int G_OFF_NAMES = 0x6E6B164; // v1.13.12
-unsigned int G_OFF_NAMES = 0x73C6094; // v1.14.10, maybe right
+unsigned int G_OFF_NAMES = 0x73C6094; // v1.14.10
 unsigned int G_ADDR_NAMES = 0; 
 pid_t G_PID = -1;
 
 //unsigned int G_OFf_GUObjectArray__ObjObjects = 0x6EF2F60; // v1.13.12
-unsigned int G_OFf_GUObjectArray__ObjObjects = 0x71f8dc8; // v1.14.10, meybe right
+unsigned int G_OFf_GUObjectArray__ObjObjects = 0x71f8dc8; // v1.14.10, 错了
 unsigned int G_ADDR_GUObjectArray__ObjObjects = 0;
 
 unsigned int G_libUE4_base = 0;
@@ -418,10 +418,13 @@ int main(int argc, char *argv[]){
     
 
     char s[1024] = { 0 };
-    GetNameByIndex(1199, s);
-    printf("s:%s\n", s);
+    for(int i=0; i<100; i++){
+        GetNameByIndex(i, s);
+        printf("ComparisonIndex:%d %s\n", i, s);
+    }
+
     //readObjects();
-    readLocationByMovementComp(fifo_writer);
+    //readLocationByMovementComp(fifo_writer);
 
     //char ws[] = {0x60, 0x4f, 0x28, 0x57, 0x93, 0x62, 0x50, 0x5b, 0x6c, 0x70, 0xa8, 0x61, 0x79, 0x62, 0x00, 0x00};
     wchar_t ws[] = {0x4f60, 0x5728, 0x6293, 0x5b50, 0x706c, 0x61a8, 0x6279, 0};

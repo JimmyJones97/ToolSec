@@ -29,7 +29,8 @@ typedef struct FNameEntry{
 }FNameEntry;
 
 struct TNameEntryArray{
-  FNameEntry** Chunks[128];  // 000
+  //FNameEntry** Chunks[128];  // 000
+  FNameEntry** Chunks[256];  // 000
   int32_t NumElements;        // 512
   int32_t NumChunks;         // 516
   // total: 520 = 0x208
