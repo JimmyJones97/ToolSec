@@ -35,6 +35,7 @@ rem @rd /s /q %BUILD_DIR%
   -DANDROID_STL=c++_static ^
   -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=%~dp0\built\%ABI% ^
   -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=%~dp0\built\%ABI% ^
+  -DPROTO_EXECUTABLE=D:\Tools\protoc-3.17.3-win64\bin\protoc.exe ^
   ..
 
 @%CMAKE% --build .  -- log-level=DEBUG

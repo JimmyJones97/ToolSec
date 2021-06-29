@@ -1,18 +1,18 @@
 cmake_minimum_required(VERSION 3.4.1)
 
-message(STATUS "CMAKE_ANDROID_ARCH_ABI: " ${CMAKE_ANDROID_ARCH_ABI})
+message(STATUS "CMAKE_ANDROID_ARCH_ABI: " ${ANDROID_ABI})
 message(STATUS "readname only support armeabi-v7a")
 
 if(CMAKE_ANDROID_ARCH_ABI MATCHES "^armeabi-v7a")
 set(LIBRARY_NAME "readname32")
 
 set(SOURCES
-      src/readname.cpp
-      src/DumpUtils.cpp
-      src/RemoteUtils.cpp
-      src/UE4Names.cpp
-      src/Tidy_BP_PlayerPawn_C.cpp
-      src/FIFOWriter.cpp
+    src/readname.cpp
+    src/DumpUtils.cpp
+    src/RemoteUtils.cpp
+    src/UE4Names.cpp
+    src/Tidy_BP_PlayerPawn_C.cpp
+    src/FIFOWriter.cpp
     )
 
 
