@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.4.1)
 
-message("CMAKE_ANDROID_ARCH_ABI: "${CMAKE_ANDROID_ARCH_ABI})
-message(WARNING "fifo_reader only support armeabi-v7a")
+message(STATUS "CMAKE_ANDROID_ARCH_ABI: " ${CMAKE_ANDROID_ARCH_ABI})
+message(STATUS "fifo_reader only support armeabi-v7a")
 
 if(CMAKE_ANDROID_ARCH_ABI MATCHES "^armeabi-v7a")
   set(LIBRARY_NAME "fifo_reader32")

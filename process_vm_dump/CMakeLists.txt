@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.4.1)
 
-message("process_vm_dump only support arm64-v8a")
+message(STATUS "process_vm_dump only support arm64-v8a")
 if(CMAKE_ANDROID_ARCH_ABI MATCHES "^arm64-v8a")
 
 set(LIBRARY_NAME "process_vm_dump")

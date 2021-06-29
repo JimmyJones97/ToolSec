@@ -37,7 +37,7 @@ rem @rd /s /q %BUILD_DIR%
   -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=%~dp0\built\%ABI% ^
   ..
 
-@%CMAKE% --build .
+@%CMAKE% --build .  -- log-level=DEBUG
 
 @echo cd %%~dp0 >> REBUILD.cmd
 @echo %CMAKE% --build . >> REBUILD.cmd

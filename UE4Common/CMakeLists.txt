@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.4.1)
 
 PROJECT(UE4Common CXX)
 
-message("CMAKE_ANDROID_ARCH_ABI: "${CMAKE_ANDROID_ARCH_ABI})
-message(WARNING "readname only support armeabi-v7a")
+message(STATUS "CMAKE_ANDROID_ARCH_ABI: " ${CMAKE_ANDROID_ARCH_ABI})
+message(STATUS "readname only support armeabi-v7a")
 
 if(CMAKE_ANDROID_ARCH_ABI MATCHES "^armeabi-v7a")
     set(LIBRARY_NAME "ue4common")
