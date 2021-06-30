@@ -36,7 +36,7 @@ bool Tidy_BP_PlayerPawn_C::SyncFromRemote(){
         DEBUG_PRINT("read bDead failed");
         success = false;
     }
-    bDead &= 1;
+    bDead &= 1; // 最低位表示bDead
 
     if(0 != readNBytes(G_PID, (void*)(RemoteBaseAddr+OFF_TeamNum), (void*)&TeamNum, sizeof(TeamNum))){
         DEBUG_PRINT("read TeamNum failed");

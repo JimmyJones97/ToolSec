@@ -11,6 +11,7 @@ public:
     FIFOWriter(const char *path);
     int init_fifo();
     int write_data(char *data, int size);
+    int get_fd();
 
 };
 

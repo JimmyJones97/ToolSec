@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string>
+#include <locale.h>
+#include <wchar.h>
 
 #include "FIFOReader.h"
 #include "proto/addressbook.pb.h"
+#include "proto/wallhackdata.pb.h"
 
 int main(int argc, char* argv[]){
     GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -47,12 +50,34 @@ int main(int argc, char* argv[]){
     while (true)
     {
         printf("read data...\n");
-        // todo: 阻塞
-        if(0 != fifo_reader.read_data()){
-            printf("read data failed\n");
-            break;
+        wallhack::PlayersPerFrame players_per_frame;
+        players_per_frame.ParseFromFileDescriptor(fifo_reader.get_fd());
+        for(int i=0; i<players_per_frame.player_size(); i++){
+            const wallhack::Player& player = players_per_frame.player(i);
+            wchar_t name_wc[256] = {0};
+            const std::string &name_str = player.player_name();
+            int PlayerName_Count = name_str.size() / 2;
+            uint16_t *name_16 = (uint16_t*)name_str.c_str();
+            for(int j=0; j<PlayerName_Count; j++){
+                name_wc[j] = *name_16;
+                //printf("%04x %08x\n", *name_16, name_wc[j]);
+                name_16++;
+            }
+            setlocale(LC_ALL, "");
+            printf("player[%d] %ls screen_pos:(%f,%f) health:%f\n", 
+                i, 
+                name_wc, 
+                player.screen_pos().x(), 
+                player.screen_pos().y(),
+                player.health());
         }
-        sleep(1);
+
+        
+        // if(0 != fifo_reader.read_data()){
+        //     printf("read data failed\n");
+        //     break;
+        // }
+        sleep(5);
     }
 
     printf("while break\n");

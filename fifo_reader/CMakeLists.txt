@@ -11,7 +11,6 @@ if(ANDROID_ABI MATCHES "^armeabi-v7a")
       message(ERROR "PROTOC_EXECUTABLE not defined")
   endif(NOT DEFINED PROTO_EXECUTABLE)
   message(STATUS "PROTO_EXECUTABLE:" ${PROTO_EXECUTABLE})
-  
   set(PROTO_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/proto)
   set(CPP_OUT ${CMAKE_CURRENT_SOURCE_DIR}/src/proto)
   message(STATUS "PROTO_PATH:" ${PROTO_PATH})
@@ -37,12 +36,10 @@ if(ANDROID_ABI MATCHES "^armeabi-v7a")
   # endif()
   set(THIRD_PARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty)
   message(STATUS "THIRD_PARTY_DIR=" ${THIRD_PARTY_DIR})
-  set(PROTOBUF_STATIC_LIBRARY ${THIRD_PARTY_DIR}/protobuf/${ANDROID_ABI}/libprotobuf.a)
-  message(STATUS "PROTOBUF_STATIC_LIBRARY=" ${PROTOBUF_STATIC_LIBRARY})
-  # 以导入外部库的方式(不会重新编译)重新构建一个静态库
-  add_library(libprotobuf_static STATIC IMPORTED)
-  # 设置要导入的外部静态库的路径
-  set_target_properties(libprotobuf_static PROPERTIES IMPORTED_LOCATION ${THIRD_PARTY_DIR}/protobuf/${ANDROID_ABI}/libprotobuf.a)
+  # # 以导入外部库的方式(不会重新编译)重新构建一个静态库
+  # add_library(libprotobuf_static STATIC IMPORTED)
+  # # 设置要导入的外部静态库的路径
+  # set_target_properties(libprotobuf_static PROPERTIES IMPORTED_LOCATION ${THIRD_PARTY_DIR}/protobuf/${ANDROID_ABI}/libprotobuf.a)
   add_library(libprotobuf-lite_static STATIC IMPORTED)
   set_target_properties(libprotobuf-lite_static PROPERTIES IMPORTED_LOCATION ${THIRD_PARTY_DIR}/protobuf/${ANDROID_ABI}/libprotobuf-lite.a)
 

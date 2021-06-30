@@ -18,6 +18,7 @@
 #include "DumpUtils.h"
 #include "Tidy_BP_PlayerPawn_C.h"
 #include "FIFOWriter.h"
+#include "proto/wallhackdata.pb.h"
 
 #include "../../UE4Common/src/include/Camera/CameraTypes.h"
 #include "../../UE4Common/src/include/MySimulation.h"
@@ -312,7 +313,7 @@ void readLocationByMovementComp(FIFOWriter &fifo_writer){
         FSceneViewProjectionData ProjectionData;
         MySimulation::LocalPlayer__GetProjectionData(2340.f, 1080.f, POV, ProjectionData);
 
-
+        wallhack::PlayersPerFrame player_per_frame;
         std::map<unsigned int, charmove>::iterator it;
         for(it=STCharacterMovementComponent_map.begin(); it != STCharacterMovementComponent_map.end(); ++it){
             unsigned int InternalIndex = it->first;
@@ -321,8 +322,6 @@ void readLocationByMovementComp(FIFOWriter &fifo_writer){
 
             Tidy_BP_PlayerPawn_C player(remote_Outer);
             printf("%s", player.ToString().c_str());
-
-            fifo_writer.write_data((char*)player.ToString().c_str(), player.ToString().size());
 
             FVector LastUpdateLocation;
             if(0 != readNBytes(G_PID, (void*)(p_CharMoveComp + 0x27c), (void*)&LastUpdateLocation, sizeof(FVector))){
@@ -344,6 +343,8 @@ void readLocationByMovementComp(FIFOWriter &fifo_writer){
             FVector2D out_ScreenPos;
             FSceneView::ProjectWorldToScreen(LastUpdateLocation, ProjectionData.GetViewRect(), ProjectionData.ComputeViewProjectionMatrix(), out_ScreenPos);
 
+            //fifo_writer.write_data((char*)player.ToString().c_str(), player.ToString().size());
+
             if(PlayerName.Data){
                 // Note: 和平精英游戏里的PlayerName.Data存储的每个字符占用2个字节
                 // 在Android里，sizeof(wchar_t)=4，因此先读取2 * PlayerName.Count个字节，
@@ -354,6 +355,7 @@ void readLocationByMovementComp(FIFOWriter &fifo_writer){
                     printf("error: access remote temp_playername failed:0x%08x, size:%d\n", PlayerName.Data, 2*PlayerName.Count);
                     return;        
                 }
+                const char *player_name_char = (const char*)temp_playername;
                 wchar_t temp_wchar[256] = {0};
                 for(int i=0; i<PlayerName.Count; i++){
                     //printf("[%d] %04x ", i, temp_playername[i]);
@@ -366,16 +368,35 @@ void readLocationByMovementComp(FIFOWriter &fifo_writer){
                 // }
                 printf("InternalIndex=%d, p_CharMoveComp=0x%08x, LastUpdateLocation=(%f,%f,%f)  screenPos:(%f,%f) %ls\n", 
                     InternalIndex, p_CharMoveComp, LastUpdateLocation.X, LastUpdateLocation.Y, LastUpdateLocation.Z,
-                    out_ScreenPos.X, out_ScreenPos.Y, temp_wchar);     
+                    out_ScreenPos.X, out_ScreenPos.Y, temp_wchar);
+                
+                wallhack::Player *wallhack_player = player_per_frame.add_player();
+                wallhack_player->set_player_name(std::string(player_name_char, PlayerName.Count*2));
+                wallhack::ScreenPos *screen_pos = new wallhack::ScreenPos();
+                screen_pos->set_x(out_ScreenPos.X);
+                screen_pos->set_y(out_ScreenPos.Y);
+                
+                wallhack_player->set_allocated_screen_pos(screen_pos); // 必须是new出来的
+                wallhack_player->set_is_local_player(player.Controller?1:0);
+                wallhack_player->set_health(player.Health);
+                wallhack_player->set_health_max(player.HealthMax);
+                wallhack_player->set_is_ai(player.bIsAI);
+                wallhack_player->set_is_dying(player.bDying);
+                wallhack_player->set_is_dead(player.bDead);
+                wallhack_player->set_team_id(player.TeamID);
+                wallhack_player->set_team_num(player.TeamNum);     
             }
             else{
                 printf("InternalIndex=%d, p_CharMoveComp=0x%08x, LastUpdateLocation=(%f,%f,%f)\n", 
                     InternalIndex, p_CharMoveComp, LastUpdateLocation.X, LastUpdateLocation.Y, LastUpdateLocation.Z);  
             }
-            
         }
+        std::string serialized_string;
+        player_per_frame.SerializeToString(&serialized_string);
+        player_per_frame.SerializeToFileDescriptor(fifo_writer.get_fd());
+        player_per_frame.Clear();
         printf("-----\n");
-        sleep(5);
+        sleep(1);
     }while(true);    
 }
 
@@ -410,6 +431,12 @@ int main(int argc, char *argv[]){
     printf("libUE4.so base=0x%08x, G_ADDR_GUObjectArray__ObjObjects = 0x%08x + 0x%08x = 0x%08x\n", \
             libUE4_base, libUE4_base, G_OFf_GUObjectArray__ObjObjects, G_ADDR_GUObjectArray__ObjObjects);
     
+    //char ws[] = {0x60, 0x4f, 0x28, 0x57, 0x93, 0x62, 0x50, 0x5b, 0x6c, 0x70, 0xa8, 0x61, 0x79, 0x62, 0x00, 0x00};
+    wchar_t ws[] = {0x4f60, 0x5728, 0x6293, 0x5b50, 0x706c, 0x61a8, 0x6279, 0};
+    wchar_t ws2[] = {0x6211, 0x5dee, 0x54ea, 0x4e86, 0x5462, 0x0};
+    setlocale(LC_ALL, "");
+    printf("ws:%ls\n", ws2);
+
     FIFOWriter fifo_writer("/data/local/tmp/test_fifo");
     if(0 != fifo_writer.init_fifo()){
         printf("init fifo failed");
@@ -426,10 +453,6 @@ int main(int argc, char *argv[]){
     //readObjects();
     readLocationByMovementComp(fifo_writer);
 
-    //char ws[] = {0x60, 0x4f, 0x28, 0x57, 0x93, 0x62, 0x50, 0x5b, 0x6c, 0x70, 0xa8, 0x61, 0x79, 0x62, 0x00, 0x00};
-    wchar_t ws[] = {0x4f60, 0x5728, 0x6293, 0x5b50, 0x706c, 0x61a8, 0x6279, 0};
-    wchar_t ws2[] = {0x5e05, 0x6c14, 0x8def, 0x838e, 0x0034, 0x0037, 0x0033, 0};
-    setlocale(LC_ALL, "");
-    printf("ws:%ls\n", ws2);
+
     return 0;
 }

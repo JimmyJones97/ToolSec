@@ -40,3 +40,7 @@ int FIFOWriter::write_data(char *data, int size){
 
     return 0;
 }
+
+int FIFOWriter::get_fd(){
+    return m_fd;
+}

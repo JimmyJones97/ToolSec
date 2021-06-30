@@ -56,3 +56,7 @@ int FIFOReader::read_data(){
     
     return 0;    
 }
+
+int FIFOReader::get_fd(){
+    return m_fd;
+}

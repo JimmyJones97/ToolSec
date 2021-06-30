@@ -1,0 +1,26 @@
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package wallhack;
+
+message ScreenPos {
+    required float x = 1;
+    required float y = 2;
+}
+
+message Player {
+    required bytes      player_name = 1;
+    required ScreenPos  screen_pos = 2;
+    required bool       is_local_player = 3;
+    optional float      health = 4;
+    optional float      health_max = 5 [default = 100.0];
+    optional bool       is_ai = 6;
+    optional bool       is_dying = 7;
+    optional bool       is_dead = 8;
+    optional int32      team_id = 9;
+    optional int32      team_num = 10;
+}
+
+message PlayersPerFrame {
+    repeated Player player = 1;
+}

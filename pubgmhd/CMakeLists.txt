@@ -6,6 +6,45 @@ message(STATUS "readname only support armeabi-v7a")
 if(CMAKE_ANDROID_ARCH_ABI MATCHES "^armeabi-v7a")
 set(LIBRARY_NAME "readname32")
 
+
+message(STATUS "CMAKE_CURRENT_SOURCE_DIR:" ${CMAKE_CURRENT_SOURCE_DIR})
+if(NOT DEFINED PROTO_EXECUTABLE)
+    message(ERROR "PROTOC_EXECUTABLE not defined")
+endif(NOT DEFINED PROTO_EXECUTABLE)
+message(STATUS "PROTO_EXECUTABLE:" ${PROTO_EXECUTABLE})
+set(PROTO_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/proto)
+set(CPP_OUT ${CMAKE_CURRENT_SOURCE_DIR}/src/proto)
+message(STATUS "PROTO_PATH:" ${PROTO_PATH})
+message(STATUS "CPP_OUT:" ${CPP_OUT})
+file(GLOB PROTOBUF_FILES
+    src/proto/*.proto
+)
+set(PROTO_CPP_SOURCES)
+FOREACH(FIL ${PROTOBUF_FILES})
+    get_filename_component(FIL_WE ${FIL} NAME_WE)
+    
+    message(STATUS "proto file, name:" ${FIL_WE} ", path:" ${FIL})
+    EXECUTE_PROCESS(
+        COMMAND ${PROTO_EXECUTABLE} --proto_path=${PROTO_PATH} --cpp_out=${CPP_OUT} ${FIL}
+    )
+    set(PROTO_CPP_SRCS ${PROTO_CPP_SRCS} "${CPP_OUT}/${FIL_WE}.pb.cc")
+    set(PROTO_CPP_HDRS ${PROTO_CPP_HDRS} "${CPP_OUT}/${FIL_WE}.pb.h")
+ENDFOREACH()
+## find_library找不到，FUCK!!!
+# find_library(PROTOBUF_STATIC_LIBRARY NAMES libprotobuf.a PATHS D:/Download/tmp/_build_armeabi-v7a/built NO_DEFAULT_PATH)
+# if(PROTOBUF_STATIC_LIBRARY_NOTFOUND)
+#   message(FATAL_ERROR  "PROTOBUF_STATIC_LIBRARY not found")
+# endif()
+set(THIRD_PARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty)
+message(STATUS "THIRD_PARTY_DIR=" ${THIRD_PARTY_DIR})
+# # 以导入外部库的方式(不会重新编译)重新构建一个静态库
+# add_library(libprotobuf_static STATIC IMPORTED)
+# # 设置要导入的外部静态库的路径
+# set_target_properties(libprotobuf_static PROPERTIES IMPORTED_LOCATION ${THIRD_PARTY_DIR}/protobuf/${ANDROID_ABI}/libprotobuf.a)
+add_library(libprotobuf-lite_static STATIC IMPORTED)
+set_target_properties(libprotobuf-lite_static PROPERTIES IMPORTED_LOCATION ${THIRD_PARTY_DIR}/protobuf/${ANDROID_ABI}/libprotobuf-lite.a)
+
+
 set(SOURCES
     src/readname.cpp
     src/DumpUtils.cpp
@@ -13,11 +52,14 @@ set(SOURCES
     src/UE4Names.cpp
     src/Tidy_BP_PlayerPawn_C.cpp
     src/FIFOWriter.cpp
+    ${PROTO_CPP_SRCS}
+    ${PROTO_CPP_HDRS}
     )
 
 
 if (CMAKE_SYSTEM_NAME MATCHES "^Android")
-add_executable(${LIBRARY_NAME} ${SOURCES})
-  target_link_libraries(${LIBRARY_NAME} log ue4common)
+  add_executable(${LIBRARY_NAME} ${SOURCES})
+  target_include_directories(${LIBRARY_NAME} PRIVATE ${THIRD_PARTY_DIR}/protobuf/include)
+  target_link_libraries(${LIBRARY_NAME} log ue4common libprotobuf-lite_static)
 endif()
 endif()

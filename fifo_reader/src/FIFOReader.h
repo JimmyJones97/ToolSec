@@ -11,6 +11,7 @@ public:
     FIFOReader(const char *path);
     int init_fifo();
     int read_data();
+    int get_fd();
 
 };
 
