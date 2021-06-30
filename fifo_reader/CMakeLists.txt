@@ -39,6 +39,12 @@ if(ANDROID_ABI MATCHES "^armeabi-v7a")
   message(STATUS "THIRD_PARTY_DIR=" ${THIRD_PARTY_DIR})
   set(PROTOBUF_STATIC_LIBRARY ${THIRD_PARTY_DIR}/protobuf/${ANDROID_ABI}/libprotobuf.a)
   message(STATUS "PROTOBUF_STATIC_LIBRARY=" ${PROTOBUF_STATIC_LIBRARY})
+  # 以导入外部库的方式(不会重新编译)重新构建一个静态库
+  add_library(libprotobuf_static STATIC IMPORTED)
+  # 设置要导入的外部静态库的路径
+  set_target_properties(libprotobuf_static PROPERTIES IMPORTED_LOCATION ${THIRD_PARTY_DIR}/protobuf/${ANDROID_ABI}/libprotobuf.a)
+  add_library(libprotobuf-lite_static STATIC IMPORTED)
+  set_target_properties(libprotobuf-lite_static PROPERTIES IMPORTED_LOCATION ${THIRD_PARTY_DIR}/protobuf/${ANDROID_ABI}/libprotobuf-lite.a)
 
   set(SOURCES
         src/FIFOReader.cpp
@@ -49,6 +55,6 @@ if(ANDROID_ABI MATCHES "^armeabi-v7a")
   if (CMAKE_SYSTEM_NAME MATCHES "^Android")
     add_executable(${LIBRARY_NAME} ${SOURCES})
     target_include_directories(${LIBRARY_NAME} PRIVATE ${THIRD_PARTY_DIR}/protobuf/include)
-    target_link_libraries(${LIBRARY_NAME} log ${PROTOBUF_STATIC_LIBRARY})
+    target_link_libraries(${LIBRARY_NAME} log libprotobuf-lite_static)
   endif()
 endif()
